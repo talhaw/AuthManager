@@ -1,10 +1,26 @@
 aniso8601==8.0.0
+<<<<<<< HEAD
+appdirs==1.4.3
+astroid==2.3.2
+attrs==19.3.0
+black==19.10b0
+Click==7.0
+Flask==1.1.1
+Flask-MongoAlchemy==0.7.2
+flask-mongoengine==0.9.5
+Flask-PyMongo==2.3.0
+Flask-RESTful==0.3.7
+flask-restplus==0.13.0
+Flask-Session==0.3.1
+Flask-WTF==0.14.2
+=======
 astroid==2.3.2
 attrs==19.3.0
 Click==7.0
 Flask==1.1.1
 Flask-RESTful==0.3.7
 flask-restplus==0.13.0
+>>>>>>> dev
 importlib-metadata==0.23
 isort==4.3.21
 itsdangerous==1.1.0
@@ -13,6 +29,23 @@ jsonschema==3.1.1
 lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
+<<<<<<< HEAD
+MongoAlchemy==0.19
+mongoengine==0.18.2
+more-itertools==7.2.0
+pathspec==0.6.0
+pylint==2.4.3
+pymongo==3.9.0
+pyrsistent==0.15.5
+pytz==2019.3
+regex==2019.11.1
+six==1.12.0
+toml==0.10.0
+typed-ast==1.4.0
+Werkzeug==0.16.0
+wrapt==1.11.2
+WTForms==2.2.1
+=======
 more-itertools==7.2.0
 pylint==2.4.3
 pyrsistent==0.15.5
@@ -21,4 +54,5 @@ six==1.12.0
 typed-ast==1.4.0
 Werkzeug==0.16.0
 wrapt==1.11.2
+>>>>>>> dev
 zipp==0.6.0

@@ -25,6 +25,7 @@ validate_parser.add_argument("session_id", required=True)
 cli = MongoClient(db_name="auth_model", host="0.0.0.0", port=27017)
 service_layer = ServiceLayer(cli)
 
+
 @ns.route("/")
 @api.doc(responses={500: "Resource Not Found"})
 class Login(Resource):
@@ -42,21 +43,17 @@ class Login(Resource):
 
             if status == 200:
                 response_body = {
-                    'message': 'Successfully logged in',
-                    'session_id': session_id
+                    "message": "Successfully logged in",
+                    "session_id": session_id,
                 }
                 return response_body, 200
 
             elif status == 500:
-                response_body = {
-                    'message': 'Internal server error'
-                }
+                response_body = {"message": "Internal server error"}
                 return response_body, 500
 
         except:
-            response_body = {
-                'message': 'Internal server error'
-            }
+            response_body = {"message": "Internal server error"}
             return response_body, 500
 
     @log_off.route("/")
@@ -71,27 +68,21 @@ class Login(Resource):
 
                 if status == 204:
                     response_body = {
-                        'message': 'Successfully logged out',
-                        'session_id': s_id
+                        "message": "Successfully logged out",
+                        "session_id": s_id,
                     }
                     return response_body, 204
 
                 elif status == 403:
-                    response_body = {
-                        'message': 'This user is not logged in'
-                    }
+                    response_body = {"message": "This user is not logged in"}
                     return response_body, 403
 
                 elif status == 500:
-                    response_body = {
-                        'message': 'Internal server error'
-                    }
+                    response_body = {"message": "Internal server error"}
                     return response_body, 500
 
             except:
-                response_body = {
-                    'message': 'Internal server error'
-                }
+                response_body = {"message": "Internal server error"}
                 return response_body, 500
 
     @validate.route("/")
@@ -105,29 +96,22 @@ class Login(Resource):
                 status, role = service_layer.get_session(session_id=session_id)
                 if status == 201:
                     response_body = {
-                        'message': 'Successfully get role',
-                        'session_id': session_id,
-                        'role': role
+                        "message": "Successfully get role",
+                        "session_id": session_id,
+                        "role": role,
                     }
                     return response_body, 409
 
                 elif status == 404:
-                    response_body = {
-                        'message': 'Not found',
-                        'session_id': session_id
-                    }
+                    response_body = {"message": "Not found", "session_id": session_id}
                     return response_body, 404
 
                 elif status == 500:
-                    response_body = {
-                        'message': 'Internal server error'
-                    }
+                    response_body = {"message": "Internal server error"}
                     return response_body, 500
 
             except:
-                response_body = {
-                    'message': 'Internal server error'
-                }
+                response_body = {"message": "Internal server error"}
                 return response_body, 500
 
 

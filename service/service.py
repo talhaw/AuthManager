@@ -5,10 +5,11 @@ class ServiceLayer(object):
 
     def add_session(self, username, password, role):
         try:
-            status, session_id = self.cli.add_session(username=username, password=password, role=role)
+            status, session_id = self.cli.add_session(
+                username=username, password=password, role=role)
             return status, session_id
 
-        except:
+        except BaseException:
             return 500, ""
 
     def delete_session(self, session_id):
@@ -16,7 +17,7 @@ class ServiceLayer(object):
             status, s_id = self.cli.delete_session(session_id)
             return status, s_id
 
-        except:
+        except BaseException:
             return 500, ""
 
     def get_session(self, session_id):
@@ -27,5 +28,5 @@ class ServiceLayer(object):
             elif status == 404:
                 return status, "Not logged in"
 
-        except:
+        except BaseException:
             return 500

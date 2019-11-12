@@ -19,7 +19,7 @@ class MongoClient(object):
             auth.save()
             return 200, auth.session_id
 
-        except:
+        except BaseException:
             return 500
 
     def delete_session(self, session_id):
@@ -31,7 +31,7 @@ class MongoClient(object):
             else:
                 return 403, ""
 
-        except:
+        except BaseException:
             return 500
 
     def get_session(self, session_id):
@@ -42,5 +42,5 @@ class MongoClient(object):
             else:
                 return 404, "Not logged in"
 
-        except:
+        except BaseException:
             return 500, "Internal server error"

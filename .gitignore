@@ -1,0 +1,10 @@
+venv
+<<<<<<< HEAD
+.vscode
+.idea
+service/__init__.py
+models/__init__.py
+__pycache__
+=======
+.vscode
+>>>>>>> dev

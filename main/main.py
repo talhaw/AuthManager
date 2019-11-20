@@ -52,7 +52,7 @@ class Login(Resource):
                 response_body = {"message": "Internal server error"}
                 return response_body, 500
 
-        except:
+        except BaseException:
             response_body = {"message": "Internal server error"}
             return response_body, 500
 
@@ -64,7 +64,8 @@ class Login(Resource):
             try:
                 args = logout_parser.parse_args()
                 session_id = args["session_id"]
-                status, s_id = service_layer.delete_session(session_id=str(session_id))
+                status, s_id = service_layer.delete_session(
+                    session_id=str(session_id))
 
                 if status == 204:
                     response_body = {
@@ -81,7 +82,7 @@ class Login(Resource):
                     response_body = {"message": "Internal server error"}
                     return response_body, 500
 
-            except:
+            except BaseException:
                 response_body = {"message": "Internal server error"}
                 return response_body, 500
 
@@ -103,14 +104,16 @@ class Login(Resource):
                     return response_body, 409
 
                 elif status == 404:
-                    response_body = {"message": "Not found", "session_id": session_id}
+                    response_body = {
+                        "message": "Not found",
+                        "session_id": session_id}
                     return response_body, 404
 
                 elif status == 500:
                     response_body = {"message": "Internal server error"}
                     return response_body, 500
 
-            except:
+            except BaseException:
                 response_body = {"message": "Internal server error"}
                 return response_body, 500
 

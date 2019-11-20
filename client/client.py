@@ -1,7 +1,6 @@
-import traceback
-import hashlib
-from models.models import *
 import uuid
+
+from models.models import *
 
 
 class MongoClient(object):

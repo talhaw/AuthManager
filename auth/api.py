@@ -1,10 +1,12 @@
-from flask import Flask
-from flask_restplus import Api, Resource, fields, abort
-from service.service import *
-from db.client import *
-import json
+import hashlib
 
-app = Flask(__name__)
+from flask_restplus import Api, Resource, fields, abort
+
+from .views import *
+from client.client import *
+from run import *
+from config import *
+
 api = Api(app)
 
 ns = api.namespace("login", description="Login Operation")
@@ -22,7 +24,7 @@ logout_parser.add_argument("session_id", required=True)
 validate_parser = api.parser()
 validate_parser.add_argument("session_id", required=True)
 
-cli = MongoClient(db_name="auth_model", host="0.0.0.0", port=27017)
+cli = MongoClient(db_name=db_name, host=host, port=port)
 service_layer = ServiceLayer(cli)
 
 
@@ -116,7 +118,3 @@ class Login(Resource):
             except BaseException:
                 response_body = {"message": "Internal server error"}
                 return response_body, 500
-
-
-if __name__ == "__main__":
-    app.run(debug=True)

@@ -1,12 +1,12 @@
 class ServiceLayer(object):
+
     def __init__(self, cli):
         self.cli = cli
 
     def add_session(self, username, password, role):
         try:
             status, session_id = self.cli.add_session(
-                username=username, password=password, role=role
-            )
+                username=username, password=password, role=role)
             return status, session_id
 
         except BaseException:

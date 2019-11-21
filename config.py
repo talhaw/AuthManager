@@ -1,5 +1,5 @@
 DEBUG = False
-port = '27017'
-db_name = 'auth_model'
-host = '0.0.0.0'
+port = '3306'
+db_name = 'apnaschoolmysqldb'
+host = 'db'
 SECRET_KEY = "ThisisaSecret"

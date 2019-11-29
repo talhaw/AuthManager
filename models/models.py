@@ -1,28 +1,32 @@
-from datetime import datetime
+from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy.orm import relationship
 
-from mongoengine import *
-from sqlalchemy import Column, String, Boolean, DateTime, Integer
-from sqlalchemy.ext.declarative import declarative_base
+import uuid
 
-from init import db
+from run import db
 
 
-class AuthManager(Document):
-    user_id = StringField()
-    session_id = StringField()
-    role = StringField(choices=["student", "teacher"])
+class AuthManager(db.Model):
+    id = Column(Integer, primary_key=True)
+    session_id = Column(String(32))
+    role = Column(String(7))
 
+    user_id = Column(ForeignKey)
+
+    def __init__(self, role):
+        self.session_id = uuid
+        self.role = role
 
 class User(db.Model):
     __tablename__ = 'users'
-    user_id = Column('user_id', Integer, primary_key=True)
+    id = Column('user_id', Integer, primary_key=True)
     name = Column('name', String(50))
     age = Column('age', String(100))
     grade = Column('grade', Integer)
     department = Column('department', String(100))
     password = Column('password', String(100))
-    # verified = Column('verified', Boolean)
-    # date_created = Column('date_created', DateTime, default=datetime.now)
+
+    auth_manager = relationship("AuthManager", uselist=False, backref='user', cascade='delete_all')
 
     def __init__(self, name, age, grade, department, password):
         self.name = name
@@ -31,4 +35,3 @@ class User(db.Model):
         self.department = department
         self.password = password
         # self.verified = verified
-

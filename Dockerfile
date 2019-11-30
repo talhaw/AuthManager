@@ -12,4 +12,4 @@ RUN pip install -r requirements.txt
 #COPY __init__.py /AuthManager
 #COPY ./auth /app/AuthManager
 
-CMD python init.py
+CMD bash ./entrypoint/app.sh

@@ -1,29 +1,24 @@
-from datetime import datetime
+import uuid
 
-from mongoengine import *
-from sqlalchemy import Column, String, Boolean, DateTime, Integer
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy.orm import relationship
 
-from init import db
-
-
-class AuthManager(db.Model):
-    __tablename__ = 'auth_table'
-    user_id = StringField()
-    session_id = StringField()
-    role = StringField(choices=["student", "teacher"])
+from run import db
 
 
 class User(db.Model):
     __tablename__ = 'users'
-    user_id = Column('user_id', Integer, primary_key=True)
+    id = Column('user_id', Integer, primary_key=True)
     name = Column('name', String(50))
     age = Column('age', String(100))
     grade = Column('grade', Integer)
     department = Column('department', String(100))
     password = Column('password', String(100))
-    # verified = Column('verified', Boolean)
-    # date_created = Column('date_created', DateTime, default=datetime.now)
+    auth_manager = db.relationship('AuthManager', backref='user', lazy=True)
+
+    # posts = db.relationship('Post', backref='poster', lazy='dynamic')
+
+    # auth_manager = relationship("AuthManager", uselist=False, backref='user', cascade='delete_all')
 
     def __init__(self, name, age, grade, department, password):
         self.name = name
@@ -33,3 +28,14 @@ class User(db.Model):
         self.password = password
         # self.verified = verified
 
+
+class AuthManager(db.Model):
+    id = Column(Integer, primary_key=True)
+    session_id = Column(String(32))
+    role = Column(String(7))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # user_id = Column(ForeignKey)
+
+    def __init__(self, role):
+        self.session_id = uuid
+        self.role = role

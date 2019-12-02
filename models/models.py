@@ -27,15 +27,3 @@ class User(db.Model):
         self.department = department
         self.password = password
         # self.verified = verified
-
-
-class AuthManager(db.Model):
-    id = Column(Integer, primary_key=True)
-    session_id = Column(String(32))
-    role = Column(String(7))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    # user_id = Column(ForeignKey)
-
-    def __init__(self, role):
-        self.session_id = uuid
-        self.role = role

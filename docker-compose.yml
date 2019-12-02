@@ -2,16 +2,18 @@ version: "2"
 services:
   app:
     build: .
+    entrypoint: ./entrypoint/app.sh
     links:
       - db
     ports:
       - "5000:5000"
+    volumes:
+      - .:/AuthManager
 
   db:
     image: mysql:5.6
     ports:
-      - "3306:3306"
+      - "3307:3307"
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-
       MYSQL_DATABASE: apnaschoolmysqldb

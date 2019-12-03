@@ -1,16 +1,12 @@
-import uuid
-import hashlib
-
 from flask import Flask, request, Response
 
-from run import db, app
 from models.models import User
+from run import db, app
 
 
-@app.route('/add_user', methods=['POST'])
+@app.route('/User', methods=['POST'])
 def add_user():
     result = request.form
-
     name = result["name"]
     age = result["age"]
     grade = result["grade"]
@@ -26,7 +22,7 @@ def add_user():
     return response_body, 200
 
 
-@app.route('/delete_user', methods=['POST', 'GET'])
+@app.route('/User', methods=['DELETE'])
 def delete_user():
     result = request.form
     user_id = result["user_id"]
@@ -38,7 +34,7 @@ def delete_user():
         return Response(status=404)
 
 
-@app.route('/get_user', methods=['POST', 'GET'])
+@app.route('/User', methods=['GET'])
 def get_user():
 
     result = request.form
@@ -50,7 +46,29 @@ def get_user():
 
     if quer:
         response_body = {"message": "User exists with this id"}
-        return response_body, 200
+        # return response_body, 200
+        return Response(status=200)
 
     else:
         return Response(status=404)
+
+
+@app.route('/User', methods=['PUT'])
+def update_user():
+    result = request.form
+    user_id = result["user_id"]
+    return Response(status=200)
+
+    # quer = db.session.query(User).filter_by(id=user_id).first()
+    # # db.session.commit()
+    # # db.session.close()
+    #
+    # if quer:
+    #     quer.name = "talha"
+    #     # quer = db.session.query(User).filter_by(id=user_id).update(name=result["name"])
+    #     db.session.commit()
+    #     db.session.close()
+    #     return Response(status=200)
+    #
+    # else:
+    #     return Response(status=404)

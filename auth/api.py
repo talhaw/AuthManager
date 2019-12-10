@@ -2,7 +2,7 @@ from flask import request, Response
 from flask_mail import Message
 
 from models.models import User
-from run import db, app, mail
+from run import db, app, mail, celery
 
 
 @app.route('/User', methods=['POST'])
@@ -18,10 +18,11 @@ def add_user():
     new_user = User(email, name, age, grade, department, password)
     db.session.add(new_user)
     db.session.commit()
-
-    msg = Message('Confirm Email', sender=app.config['MAIL_USERNAME'], recipients=[email])
-    msg.body = 'Your have been succesfully registered to auth manager'
-    mail.send(msg)
+    #
+    # msg = Message('Confirm Email', sender=app.config['MAIL_USERNAME'], recipients=[email])
+    # msg.body = 'Your have been successfully registered to auth manager'
+    # mail.send(msg)
+    send_async_email.delay(email)
 
     return Response("Record added successfully", status=200)
 
@@ -71,3 +72,11 @@ def update_user():
 
     else:
         return Response(status=404)
+
+
+@celery.task(name='auth.api.send_async_email')
+def send_async_email(email):
+    msg = Message('Confirm Email', sender=app.config['MAIL_USERNAME'], recipients=[email])
+    msg.body = 'Your have been successfully registered to auth manager'
+    with app.app_context():
+        mail.send(msg)

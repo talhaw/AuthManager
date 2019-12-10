@@ -5,6 +5,7 @@ services:
     entrypoint: ./entrypoint/app.sh
     links:
       - db
+      - redis
     ports:
       - "5000:5000"
     volumes:
@@ -17,3 +18,10 @@ services:
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: apnaschoolmysqldb
+  redis:
+    image: redis:latest
+
+  worker:
+    build:
+      context: .
+    command: celery -A app.celery worker --loglevel=info

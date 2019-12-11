@@ -18,7 +18,7 @@ def add_user():
     new_user = User(email, name, age, grade, department, password)
     db.session.add(new_user)
     db.session.commit()
-    #
+
     # msg = Message('Confirm Email', sender=app.config['MAIL_USERNAME'], recipients=[email])
     # msg.body = 'Your have been successfully registered to auth manager'
     # mail.send(msg)
@@ -43,7 +43,6 @@ def delete_user():
 
 @app.route('/User', methods=['GET'])
 def get_user():
-
     result = request.form
 
     user_id = result["user_id"]

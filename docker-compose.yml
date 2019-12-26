@@ -1,0 +1,29 @@
+version: "2"
+services:
+  app:
+    build: .
+    entrypoint: ./entrypoint/app.sh
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/AuthManager
+
+  redis:
+    image: redis:latest
+    hostname: redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: worker
+    command: celery -A run.celery worker --loglevel=info
+
+
+  db:
+    image: mysql:5.6
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: apnaschoolmysqldb

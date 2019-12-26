@@ -1,120 +1,81 @@
-import hashlib
+from flask import request, Response
+from flask_mail import Message
 
-from flask_restplus import Api, Resource, fields, abort
-
-from .views import *
-from client.client import *
-from run import *
-from config import *
-
-api = Api(app)
-
-ns = api.namespace("login", description="Login Operation")
-log_off = api.namespace("logout", description="Logout Operation")
-validate = api.namespace("validate", description="Validation Operation")
-
-login_parser = api.parser()
-login_parser.add_argument("username", required=True)
-login_parser.add_argument("password", required=True)
-login_parser.add_argument("role", required=True)
-
-logout_parser = api.parser()
-logout_parser.add_argument("session_id", required=True)
-
-validate_parser = api.parser()
-validate_parser.add_argument("session_id", required=True)
-
-cli = MongoClient(db_name=db_name, host=host, port=port)
-service_layer = ServiceLayer(cli)
+from models.models import User
+from run import db, app, mail, celery
 
 
-@ns.route("/")
-@api.doc(responses={500: "Resource Not Found"})
-class Login(Resource):
-    @api.doc(parser=login_parser)
-    def post(self):
-        try:
-            args = login_parser.parse_args()
-            username = args["username"]
-            password = args["password"]
-            role = args["role"]
-            password = hashlib.sha1(password.encode()).hexdigest()
-            status, session_id = service_layer.add_session(
-                username=username, password=password, role=role
-            )
+@app.route('/User', methods=['POST'])
+def add_user():
+    result = request.form
+    email = result["email"]
+    name = result["name"]
+    age = result["age"]
+    grade = result["grade"]
+    department = result["department"]
+    password = result["password"]
 
-            if status == 200:
-                response_body = {
-                    "message": "Successfully logged in",
-                    "session_id": session_id,
-                }
-                return response_body, 200
+    new_user = User(email, name, age, grade, department, password)
+    db.session.add(new_user)
+    db.session.commit()
 
-            elif status == 500:
-                response_body = {"message": "Internal server error"}
-                return response_body, 500
+    # msg = Message('Confirm Email', sender=app.config['MAIL_USERNAME'], recipients=[email])
+    # msg.body = 'Your have been successfully registered to auth manager'
+    # mail.send(msg)
+    send_async_email.delay(email)
 
-        except BaseException:
-            response_body = {"message": "Internal server error"}
-            return response_body, 500
+    return Response("Record added successfully", status=200)
 
-    @log_off.route("/")
-    @api.doc(responses={500: "Resource Not Found"})
-    class Logout(Resource):
-        @api.doc(parser=logout_parser)
-        def post(self):
-            try:
-                args = logout_parser.parse_args()
-                session_id = args["session_id"]
-                status, s_id = service_layer.delete_session(
-                    session_id=str(session_id))
 
-                if status == 204:
-                    response_body = {
-                        "message": "Successfully logged out",
-                        "session_id": s_id,
-                    }
-                    return response_body, 204
+@app.route('/User', methods=['DELETE'])
+def delete_user():
+    result = request.form
+    user_id = result["user_id"]
+    user = db.session.query(User).filter_by(id=user_id).first()
 
-                elif status == 403:
-                    response_body = {"message": "This user is not logged in"}
-                    return response_body, 403
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        return Response(status=200)
 
-                elif status == 500:
-                    response_body = {"message": "Internal server error"}
-                    return response_body, 500
+    return Response(status=404)
 
-            except BaseException:
-                response_body = {"message": "Internal server error"}
-                return response_body, 500
 
-    @validate.route("/")
-    @api.doc(responses={500: "Resource Not Found"})
-    class Validate(Resource):
-        @api.doc(parser=validate_parser)
-        def get(self):
-            try:
-                args = validate_parser.parse_args()
-                session_id = args["session_id"]
-                status, role = service_layer.get_session(session_id=session_id)
-                if status == 201:
-                    response_body = {
-                        "message": "Successfully get role",
-                        "session_id": session_id,
-                        "role": role,
-                    }
-                    return response_body, 409
+@app.route('/User', methods=['GET'])
+def get_user():
+    result = request.form
 
-                elif status == 404:
-                    response_body = {
-                        "message": "Not found",
-                        "session_id": session_id}
-                    return response_body, 404
+    user_id = result["user_id"]
+    quer = db.session.query(User).filter_by(id=user_id).first()
+    db.session.commit()
+    db.session.close()
 
-                elif status == 500:
-                    response_body = {"message": "Internal server error"}
-                    return response_body, 500
+    if quer:
+        return Response(status=200)
 
-            except BaseException:
-                response_body = {"message": "Internal server error"}
-                return response_body, 500
+    return Response(status=404)
+
+
+@app.route('/User', methods=['PUT'])
+def update_user():
+    result = request.form
+    user_id = result["user_id"]
+    name = result["name"]
+
+    quer = db.session.query(User).filter_by(id=user_id).first()
+    if quer:
+        quer.name = name
+        db.session.commit()
+        db.session.close()
+        return Response(status=200)
+
+    else:
+        return Response(status=404)
+
+
+@celery.task(name='auth.api.send_async_email')
+def send_async_email(email):
+    msg = Message('Confirm Email', sender=app.config['MAIL_USERNAME'], recipients=[email])
+    msg.body = 'Your have been successfully registered to auth manager'
+    with app.app_context():
+        mail.send(msg)
